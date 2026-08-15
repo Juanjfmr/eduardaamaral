@@ -391,17 +391,19 @@
     const reelStage = document.getElementById("reel-stage");
     if (reelStage) {
       reelStage.innerHTML =
+        '<div class="reel__track">' +
         main.map(function (p, i) {
           const d = p.hero.desktop;
           const tools = p.tools && p.tools.length ? p.tools.join(" · ") : "Imagem";
           return (
-            '<figure class="reel__frame" style="--focus: ' + esc(d.focus || "50% 50%") + ';">' +
+            '<figure class="reel__frame">' +
               '<img src="' + esc(d.src) + '" alt="' + esc(p.title + " — " + tools) + '" decoding="async" />' +
               '<figcaption class="reel__caption mono"><span>' + pad(i + 1) + " / " + pad(main.length) + "</span><span>" + esc(p.title) + " · " + esc(tools) + "</span></figcaption>" +
             "</figure>"
           );
         }).join("") +
-        '<div class="reel__ticks" aria-hidden="true">' + main.map(function () { return "<i></i>"; }).join("") + "</div>";
+        "</div>" +
+        '<span class="reel__progress" aria-hidden="true"><i></i></span>';
     }
     document.getElementById("year").textContent = new Date().getFullYear();
   }
@@ -636,22 +638,27 @@
       });
     }
 
-    /* Reel — quadros dirigidos pelo scroll */
+    /* Reel — faixa de filme dirigida pelo scroll */
     const reel = document.querySelector(".reel");
     if (reel) {
-      const frames = gsap.utils.toArray(".reel__frame");
-      const ticks = gsap.utils.toArray(".reel__ticks i");
-      const step = 1 / (frames.length - 1);
+      const track = reel.querySelector(".reel__track");
+      const progress = reel.querySelector(".reel__progress i");
       const rt = gsap.timeline({
-        scrollTrigger: { trigger: reel, start: "top 72%", end: "+=170%", pin: true, scrub: 0.8 }
+        scrollTrigger: {
+          trigger: reel,
+          start: "top 75%",
+          end: "+=170%",
+          pin: true,
+          scrub: 0.8,
+          invalidateOnRefresh: true
+        }
       });
-      frames.forEach(function (frame, i) {
-        if (i === 0) return;
-        const pos = (i - 0.55) * step;
-        rt.to(frames[i - 1], { opacity: 0, duration: step * 0.6, ease: "none" }, pos)
-          .fromTo(frame, { opacity: 0 }, { opacity: 1, duration: step, ease: "none" }, pos);
-        if (ticks[i]) rt.to(ticks[i], { className: "+=is-on" }, i * step);
-      });
+      rt.fromTo(track, { x: 0 }, {
+        x: function () { return -Math.max(0, track.scrollWidth - reel.clientWidth); },
+        duration: 1,
+        ease: "none"
+      }, 0)
+        .fromTo(progress, { scaleX: 0 }, { scaleX: 1, duration: 1, ease: "none" }, 0);
     }
 
     /* Hover — títulos deslizam via GSAP (sem briga com CSS) */
