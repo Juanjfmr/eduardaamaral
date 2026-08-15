@@ -396,7 +396,7 @@
           const tools = p.tools && p.tools.length ? p.tools.join(" · ") : "Imagem";
           return (
             '<figure class="reel__frame" style="--focus: ' + esc(d.focus || "50% 50%") + ';">' +
-              '<img src="' + esc(d.src) + '" alt="' + esc(p.title + " — " + tools) + '" loading="lazy" decoding="async" />' +
+              '<img src="' + esc(d.src) + '" alt="' + esc(p.title + " — " + tools) + '" decoding="async" />' +
               '<figcaption class="reel__caption mono"><span>' + pad(i + 1) + " / " + pad(main.length) + "</span><span>" + esc(p.title) + " · " + esc(tools) + "</span></figcaption>" +
             "</figure>"
           );
