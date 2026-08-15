@@ -183,11 +183,32 @@ section[id] { scroll-margin-top: 5.5rem; }
 .site-header__nav a:hover { color: var(--oxide-light); }
 .site-header__status { color: rgba(236, 231, 222, 0.66); }
 
-.site-header.is-scrolled { color: var(--ink); }
+.site-header.is-scrolled,
+.site-header.is-open { color: var(--ink); }
 .site-header.is-scrolled .site-header__role,
 .site-header.is-scrolled .site-header__nav a,
-.site-header.is-scrolled .site-header__status { color: var(--ink-soft); }
-.site-header.is-scrolled .site-header__nav a:hover { color: var(--oxide); }
+.site-header.is-scrolled .site-header__status,
+.site-header.is-open .site-header__role,
+.site-header.is-open .site-header__nav a,
+.site-header.is-open .site-header__status { color: var(--ink-soft); }
+.site-header.is-scrolled .site-header__nav a:hover,
+.site-header.is-open .site-header__nav a:hover { color: var(--oxide); }
+
+/* Botão do menu — só aparece no mobile (regra em @media 760px) */
+.site-header__toggle {
+  display: none;
+  margin-left: auto;
+  padding: 0.55rem 0.7rem;
+  background: none;
+  border: 1px solid currentColor;
+  color: inherit;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
 
 /* -------------------------------- Hero ------------------------------- */
 
@@ -1307,14 +1328,18 @@ body::after {
   background: rgba(236, 231, 222, 0.4);
 }
 
-/* Cursor customizado — ponto + anel */
+/* Cursor customizado — ponto + anel.
+   Só existe em ponteiro fino: sem isso o anel fica preso em 0,0 no toque. */
 .cursor {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 600;
   pointer-events: none;
 }
+
+body.has-cursor .cursor { display: block; }
 
 .cursor__dot {
   position: absolute;
@@ -1489,12 +1514,60 @@ body.no-motion .cursor-preview { display: none; }
   .frame__img { aspect-ratio: var(--ratio-m, var(--ratio, 4 / 5)); }
   .frame__img img { object-position: var(--focus-m, var(--focus, 50% 50%)); }
 
-  .site-header { flex-wrap: wrap; gap: 0.8rem; padding-block: 0.9rem; }
-  .site-header__nav { order: 3; width: 100%; flex-wrap: wrap; gap: 0.9rem; }
+  /* Cabeçalho: uma linha só + menu recolhido.
+     Antes ocupava 91px fixos (duas linhas) com links de 18px de altura. */
+  .site-header {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+    padding-block: 0.7rem;
+  }
+  .site-header__role { display: none; }
+  .site-header__brand { min-height: 44px; align-items: center; }
+  .site-header__toggle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .site-header__nav {
+    order: 3;
+    width: 100%;
+    margin: 0;
+    flex-direction: column;
+    gap: 0;
+    display: none;
+    border-top: 1px solid var(--line);
+  }
+  .site-header.is-open { background: var(--paper); }
+  .site-header.is-open .site-header__nav { display: flex; }
+
+  .site-header__nav a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    font-size: 0.78rem;
+  }
+  .site-header__nav a + a { border-top: 1px solid var(--line); }
 
   .intro { padding-bottom: 2.4rem; }
   .intro__grid { grid-template-columns: 1fr; }
   .intro__title { font-size: clamp(2.7rem, 12.5vw, 3.8rem); }
+
+  /* No celular o título cai sobre a parte clara da foto. Escurece só essa
+     faixa do meio — o topo continua na hora azul do original. */
+  .intro__scrim {
+    background:
+      linear-gradient(to top, rgba(8, 10, 14, 0.86) 0%, rgba(8, 10, 14, 0.54) 34%, rgba(8, 10, 14, 0.44) 62%, rgba(8, 10, 14, 0.34) 100%),
+      radial-gradient(120% 90% at 50% 42%, transparent 52%, rgba(8, 10, 14, 0.42) 100%);
+  }
+
+  /* Alvos de toque — mínimo de 44px */
+  .card__open { min-height: 44px; padding-block: 0.75rem; }
+  .contact__mail { min-height: 44px; padding-block: 0.3rem; }
+  .contact__links { gap: 0.4rem 2rem; }
+  .contact__links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .site-footer a { display: inline-flex; align-items: center; min-height: 44px; }
   .intro__tc { display: none; }
   .intro__scroll { display: none; }
   .reel { height: 58vh; max-height: 480px; }

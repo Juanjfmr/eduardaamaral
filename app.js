@@ -100,13 +100,41 @@
 
   /* ------------------------------ Mídia ------------------------------- */
 
+  /* Larguras WebP disponíveis por imagem (srcset.js, gerado no build).
+     Sem o manifesto, tudo cai de volta para o JPG original. */
+  function srcsetFor(src) {
+    const widths = (window.PORTFOLIO_SRCSET || {})[src];
+    if (!widths || !widths.length) return "";
+    const base = src.replace(/\.(jpe?g)$/i, "");
+    return widths.map(function (w) { return base + "-" + w + ".webp " + w + "w"; }).join(", ");
+  }
+
+  /* Menor variante disponível — para as miniaturas do cursor. */
+  function thumbFor(src) {
+    const widths = (window.PORTFOLIO_SRCSET || {})[src];
+    if (!widths || !widths.length) return src;
+    return src.replace(/\.(jpe?g)$/i, "") + "-" + widths[0] + ".webp";
+  }
+
+  function pictureMarkup(src, alt, sizes, eager) {
+    const loading = eager ? ' fetchpriority="high"' : ' loading="lazy"';
+    const img = '<img src="' + esc(src) + '" alt="' + esc(alt) + '" decoding="async"' + loading + " />";
+    const set = srcsetFor(src);
+    if (!set) return img;
+    return (
+      "<picture>" +
+        '<source type="image/webp" srcset="' + esc(set) + '" sizes="' + esc(sizes) + '" />' +
+        img +
+      "</picture>"
+    );
+  }
+
   function mediaMarkup(item, alt, eager) {
     const ratio = item.ratio || "4 / 5";
-    const focus = item.focus ? " style=\"--focus: " + esc(focus) + ";\"" : "";
-    const loading = eager ? ' fetchpriority="high"' : ' loading="lazy"';
+    const focus = item.focus ? " style=\"--focus: " + esc(item.focus) + ";\"" : "";
     return (
       '<span class="frame__img" style="--ratio: ' + esc(ratio) + ';"' + focus + ">" +
-        '<img src="' + esc(item.src) + '" alt="' + esc(alt) + '" decoding="async"' + loading + " />" +
+        pictureMarkup(item.src, alt, "(max-width: 900px) 92vw, 40vw", eager) +
       "</span>"
     );
   }
@@ -122,11 +150,22 @@
       (d.focus ? "; --focus: " + esc(d.focus) : "") +
       (m && m.focus ? "; --focus-m: " + esc(m.focus) : "") + ";";
 
+    const cardSizes = "(max-width: 760px) 100vw, 46vw";
+    const desktopSet = srcsetFor(d.src);
+    const desktopSource = desktopSet
+      ? '<source type="image/webp" srcset="' + esc(desktopSet) + '" sizes="' + cardSizes + '" />'
+      : "";
+
     if (m && m.src && m.src !== d.src) {
+      const mobileSet = srcsetFor(m.src);
       return (
         '<span class="frame__img" style="' + heroStyle + '">' +
-          '<picture>' +
+          "<picture>" +
+            (mobileSet
+              ? '<source type="image/webp" media="(max-width: 760px)" srcset="' + esc(mobileSet) + '" sizes="100vw" />'
+              : "") +
             '<source media="(max-width: 760px)" srcset="' + esc(m.src) + '" />' +
+            desktopSource +
             desktopImg +
           "</picture>" +
         "</span>"
@@ -134,7 +173,7 @@
     }
     return (
       '<span class="frame__img" style="' + heroStyle + '">' +
-        desktopImg +
+        (desktopSource ? "<picture>" + desktopSource + desktopImg + "</picture>" : desktopImg) +
       "</span>"
     );
   }
@@ -197,7 +236,7 @@
   }
 
   function indexRow(p) {
-    const previewSrc = p.hero.desktop.src;
+    const previewSrc = thumbFor(p.hero.desktop.src);
     const previewRatio = p.hero.desktop.ratio || "4 / 5";
     return (
       '<li class="index__row">' +
@@ -397,7 +436,18 @@
           const tools = p.tools && p.tools.length ? p.tools.join(" · ") : "Imagem";
           return (
             '<figure class="reel__frame">' +
-              '<img src="' + esc(d.src) + '" alt="' + esc(p.title + " — " + tools) + '" decoding="async" />' +
+              (function () {
+                const set = srcsetFor(d.src);
+                /* Os dois primeiros quadros carregam de imediato: a faixa nunca
+                   entra em cena vazia. O resto só quando arrastado. */
+                const loading = i < 2 ? "" : ' loading="lazy"';
+                const img = '<img src="' + esc(d.src) + '" alt="' + esc(p.title + " — " + tools) + '" decoding="async"' + loading + " />";
+                if (!set) return img;
+                return "<picture>" +
+                  '<source type="image/webp" srcset="' + esc(set) + '" sizes="(max-width: 760px) 72vw, 26vw" />' +
+                  img +
+                "</picture>";
+              })() +
               '<figcaption class="reel__caption mono"><span>' + pad(i + 1) + " / " + pad(main.length) + "</span><span>" + esc(p.title) + " · " + esc(tools) + "</span></figcaption>" +
             "</figure>"
           );
@@ -791,8 +841,41 @@
     if (event.target.closest("[data-close-case]")) closeDialog();
   });
 
+  /* ---------------------- Menu recolhido (mobile) --------------------- */
+
+  const headerEl = document.querySelector(".site-header");
+  const menuToggle = document.querySelector(".site-header__toggle");
+
+  function setMenu(open) {
+    if (!headerEl || !menuToggle) return;
+    headerEl.classList.toggle("is-open", open);
+    menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    menuToggle.textContent = open ? "Fechar" : "Menu";
+  }
+
+  if (menuToggle) {
+    menuToggle.addEventListener("click", function () {
+      setMenu(!headerEl.classList.contains("is-open"));
+    });
+    /* Escolher um destino fecha o menu */
+    document.querySelectorAll(".site-header__nav a").forEach(function (link) {
+      link.addEventListener("click", function () { setMenu(false); });
+    });
+    /* Voltar para o desktop (girar a tela) não pode deixar o estado preso */
+    const wide = window.matchMedia("(min-width: 761px)");
+    const onWide = function (e) { if (e.matches) setMenu(false); };
+    if (wide.addEventListener) wide.addEventListener("change", onWide);
+    else wide.addListener(onWide);
+  }
+
   document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") closeDialog();
+    if (event.key !== "Escape") return;
+    if (headerEl && headerEl.classList.contains("is-open")) {
+      setMenu(false);
+      menuToggle.focus();
+      return;
+    }
+    closeDialog();
   });
 
   /* Foco preso dentro da ficha enquanto aberta */
