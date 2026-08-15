@@ -1,0 +1,6 @@
+work/
+__pycache__/
+*.log
+*.pid
+preview.png
+.gitattributes
