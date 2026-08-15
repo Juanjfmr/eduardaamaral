@@ -1356,16 +1356,20 @@ body.has-cursor * { cursor: none; }
   height: 64vh;
   max-height: 580px;
   background: var(--blue);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
   border-block: 1px solid var(--blue-soft);
+  scrollbar-width: none;
 }
+
+.reel::-webkit-scrollbar { display: none; }
 
 .reel__track {
   display: flex;
   align-items: center;
   gap: clamp(1.2rem, 3vw, 2.6rem);
   padding-inline: clamp(1.25rem, 4vw, 3rem);
-  will-change: transform;
 }
 
 .reel__frame {
@@ -1375,6 +1379,7 @@ body.has-cursor * { cursor: none; }
   gap: 0.7rem;
   margin: 0;
   flex-shrink: 0;
+  scroll-snap-align: start;
 }
 
 .reel__frame img {
@@ -1395,6 +1400,15 @@ body.has-cursor * { cursor: none; }
 
 .reel__caption span:first-child { color: var(--oxide-light); }
 
+.reel__hint {
+  position: absolute;
+  top: 1rem;
+  right: clamp(1.25rem, 4vw, 3rem);
+  margin: 0;
+  color: rgba(236, 231, 222, 0.55);
+  font-size: 0.6rem;
+}
+
 .reel__progress {
   position: absolute;
   left: clamp(1.25rem, 4vw, 3rem);
@@ -1412,9 +1426,6 @@ body.has-cursor * { cursor: none; }
   transform: scaleX(0);
   transform-origin: left center;
 }
-
-body.no-motion .reel { overflow-x: auto; }
-body.no-motion .reel__progress { display: none; }
 
 /* Micro-movimento em hover — cor via CSS, deslize via GSAP */
 .card__title {

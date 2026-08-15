@@ -403,6 +403,7 @@
           );
         }).join("") +
         "</div>" +
+        '<p class="reel__hint mono">Arraste — 7 quadros</p>' +
         '<span class="reel__progress" aria-hidden="true"><i></i></span>';
     }
     document.getElementById("year").textContent = new Date().getFullYear();
@@ -638,27 +639,24 @@
       });
     }
 
-    /* Reel — faixa de filme dirigida pelo scroll */
+    /* Reel — faixa de filme com rolagem natural */
     const reel = document.querySelector(".reel");
     if (reel) {
-      const track = reel.querySelector(".reel__track");
-      const progress = reel.querySelector(".reel__progress i");
-      const rt = gsap.timeline({
-        scrollTrigger: {
-          trigger: reel,
-          start: "top 75%",
-          end: "+=170%",
-          pin: true,
-          scrub: 0.8,
-          invalidateOnRefresh: true
-        }
+      gsap.from(reel, {
+        opacity: 0,
+        y: 34,
+        duration: 0.9,
+        ease: "power3.out",
+        scrollTrigger: { trigger: reel, start: "top 86%" }
       });
-      rt.fromTo(track, { x: 0 }, {
-        x: function () { return -Math.max(0, track.scrollWidth - reel.clientWidth); },
-        duration: 1,
-        ease: "none"
-      }, 0)
-        .fromTo(progress, { scaleX: 0 }, { scaleX: 1, duration: 1, ease: "none" }, 0);
+      const progress = reel.querySelector(".reel__progress i");
+      const updateProgress = function () {
+        const max = reel.scrollWidth - reel.clientWidth;
+        progress.style.transform = "scaleX(" + (max > 0 ? reel.scrollLeft / max : 0) + ")";
+      };
+      reel.addEventListener("scroll", updateProgress, { passive: true });
+      window.addEventListener("resize", updateProgress);
+      updateProgress();
     }
 
     /* Hover — títulos deslizam via GSAP (sem briga com CSS) */
