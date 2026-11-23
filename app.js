@@ -51,18 +51,7 @@
     return e + (p > 0.55 ? Math.sin(((p - 0.55) / 0.45) * Math.PI) * 0.018 : 0);
   }
 
-  function splitWords(el, char) {
-    function wrapChars(text) {
-      const frag = document.createDocumentFragment();
-      text.split("").forEach(function (ch) {
-        const c = document.createElement("span");
-        c.className = "c";
-        c.textContent = ch;
-        frag.appendChild(c);
-      });
-      return frag;
-    }
-
+  function splitWords(el) {
     function walk(node) {
       if (node.nodeType === 3) {
         const parts = String(node.textContent).split(/(\s+)/);
@@ -77,11 +66,7 @@
           w.className = "w";
           const inner = document.createElement("span");
           inner.className = "w__in";
-          if (char) {
-            inner.appendChild(wrapChars(part));
-          } else {
-            inner.textContent = part;
-          }
+          inner.textContent = part;
           w.appendChild(inner);
           frag.appendChild(w);
         });
@@ -116,9 +101,10 @@
     return src.replace(/\.(jpe?g)$/i, "") + "-" + widths[0] + ".webp";
   }
 
-  function pictureMarkup(src, alt, sizes, eager) {
+  function pictureMarkup(src, alt, sizes, eager, dimensions) {
     const loading = eager ? ' fetchpriority="high"' : ' loading="lazy"';
-    const img = '<img src="' + esc(src) + '" alt="' + esc(alt) + '" decoding="async"' + loading + " />";
+    const size = dimensions ? ' width="' + dimensions[0] + '" height="' + dimensions[1] + '"' : "";
+    const img = '<img src="' + esc(src) + '" alt="' + esc(alt) + '" decoding="async"' + loading + size + " />";
     const set = srcsetFor(src);
     if (!set) return img;
     return (
@@ -254,9 +240,10 @@
 
   function galleryItemMarkup(g, index) {
     const caption = (g.caption || "Imagem " + g.index) + (g.module ? " · módulo " + g.module : "");
-    const media = mediaMarkup(g, "Imagem do projeto — " + caption);
+    const isCover = index === 0;
+    const media = mediaMarkup(g, "Imagem do projeto — " + caption, isCover);
     return (
-      '<figure class="case__figure' + (g.contain ? " case__figure--contain" : "") + '">' +
+      '<figure class="case__figure' + (isCover ? ' case__figure--cover is-in' : '') + (g.contain ? " case__figure--contain" : "") + '">' +
         '<span class="frame">' + media + "</span>" +
         "<figcaption><span>" + esc(caption) + "</span><span>" + esc(g.ratio || "") + "</span></figcaption>" +
       "</figure>"
@@ -274,11 +261,12 @@
       : "";
 
     document.getElementById("case-content").innerHTML =
-      '<header class="case__header">' +
+      '<div class="case__header"><header class="case__identity">' +
         '<div class="case__eyebrow"><span>Ficha ' + pad(p.order) + "</span><span>" +
           (p.section === "studies" ? "Studies" : "Seleção principal") + "</span></div>" +
         '<h2 id="case-title" class="case__title">' + esc(p.title) + "</h2>" +
         (p.subtitle ? '<p class="case__subtitle">' + esc(p.subtitle) + "</p>" : "") +
+        '</header><div class="case__details">' +
         '<p class="case__desc">' + esc(p.description) + "</p>" +
         (p.note ? '<p class="case__note">' + esc(p.note) + "</p>" : "") +
         '<ul class="case__tags">' + tags + "</ul>" +
@@ -291,7 +279,7 @@
         (p.behance
           ? '<a class="case__behance" href="' + esc(p.behance) + '" target="_blank" rel="noopener">Abrir no Behance ↗</a>'
           : "") +
-      "</header>" +
+      "</div></div>" +
       '<div class="case__gallery">' + gallery + "</div>" +
       nextCaseNav(p);
 
@@ -300,7 +288,7 @@
   }
 
   function observeGallery() {
-    const figures = Array.prototype.slice.call(document.querySelectorAll("#case-dialog .case__figure"));
+    const figures = Array.prototype.slice.call(document.querySelectorAll("#case-dialog .case__figure:not(.case__figure--cover)"));
     if (!("IntersectionObserver" in window)) {
       figures.forEach(function (f) { f.classList.add("is-in"); });
       return;
@@ -436,18 +424,7 @@
           const tools = p.tools && p.tools.length ? p.tools.join(" · ") : "Imagem";
           return (
             '<figure class="reel__frame">' +
-              (function () {
-                const set = srcsetFor(d.src);
-                /* Os dois primeiros quadros carregam de imediato: a faixa nunca
-                   entra em cena vazia. O resto só quando arrastado. */
-                const loading = i < 2 ? "" : ' loading="lazy"';
-                const img = '<img src="' + esc(d.src) + '" alt="' + esc(p.title + " — " + tools) + '" decoding="async"' + loading + " />";
-                if (!set) return img;
-                return "<picture>" +
-                  '<source type="image/webp" srcset="' + esc(set) + '" sizes="(max-width: 760px) 72vw, 26vw" />' +
-                  img +
-                "</picture>";
-              })() +
+              pictureMarkup(d.src, p.title + " — " + tools, "(max-width: 760px) 72vw, 26vw", false, d.intrinsicSize) +
               '<figcaption class="reel__caption mono"><span>' + pad(i + 1) + " / " + pad(main.length) + "</span><span>" + esc(p.title) + " · " + esc(tools) + "</span></figcaption>" +
             "</figure>"
           );
@@ -476,60 +453,6 @@
       scaleX: 1,
       ease: "none",
       scrollTrigger: { start: 0, end: "max", scrub: 0.3 }
-    });
-
-    /* Loader — contador de abertura */
-    gsap.set(".loader", { opacity: 1, y: 0 });
-    const counterState = { v: 0 };
-    const counterEl = document.querySelector(".loader__counter");
-    const nameEl = document.querySelector(".loader__name");
-    gsap.to(counterState, {
-      v: 100,
-      duration: 1.45,
-      ease: "power2.inOut",
-      onUpdate: function () {
-        counterEl.textContent = String(Math.round(counterState.v)).padStart(2, "0");
-      }
-    });
-    let nameIdx = 0;
-    const nameTimer = setInterval(function () {
-      nameIdx = (nameIdx + 1) % data.projects.length;
-      nameEl.textContent = data.projects[nameIdx].title;
-    }, 190);
-    gsap.to(".loader", {
-      opacity: 0,
-      y: -30,
-      duration: 0.55,
-      ease: "power2.in",
-      delay: 1.5,
-      onComplete: function () { clearInterval(nameTimer); }
-    });
-
-    /* Intro — cinema */
-    gsap.set(".intro__media img", { scale: 1.18, yPercent: -2 });
-    gsap.set(".cinema-veil__bar", { height: "50vh" });
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 1.55 });
-    tl.to(".cinema-veil__bar", { height: 0, duration: 1.05, ease: "power4.inOut" }, 0)
-      .from(".intro__media", { clipPath: "inset(100% 0% 0% 0%)", duration: 1.5, ease: "power4.inOut" }, 0.12)
-      .to(".intro__media img", { scale: 1.12, yPercent: 0, duration: 2.4, ease: "power3.out" }, 0.22)
-      .from(".intro__scrim", { opacity: 0, duration: 1.3 }, 0.25)
-      .from(".site-header", { yPercent: -120, duration: 0.7 }, 0.15)
-      .from(".intro__kicker", { opacity: 0, y: 16, filter: "blur(6px)", duration: 0.7 }, 0.45)
-      .from(".intro__title .c", { yPercent: 120, rotation: 4, duration: 0.95, stagger: 0.022, ease: "cine" }, 0.55)
-      .from(".intro__lede", { opacity: 0, y: 16, duration: 0.7 }, 1.05)
-      .from(".intro__cta .btn", { opacity: 0, y: 14, duration: 0.55, stagger: 0.08 }, 1.15)
-      .from(".intro__credit", { opacity: 0, duration: 0.7 }, 1.25)
-      .from(".intro__scroll, .ticker", { opacity: 0, duration: 0.7 }, 1.35);
-
-    /* Deriva contínua — Ken Burns */
-    gsap.to(".intro__media img", {
-      scale: 1.17,
-      yPercent: 2.5,
-      duration: 12,
-      yoyo: true,
-      repeat: -1,
-      ease: "sine.inOut",
-      delay: 3.4
     });
 
     /* Ticker infinito */
@@ -912,8 +835,12 @@
       cursor.innerHTML = '<span class="cursor__dot"></span><span class="cursor__ring"></span>';
       document.body.appendChild(cursor);
 
-      document.querySelectorAll("#intro-title .line__in").forEach(function (el) { splitWords(el, true); });
-      document.querySelectorAll(".section__title .line__in, .contact__title .line__in").forEach(splitWords);
+      if (hasGsap && !reduced) {
+        document.querySelectorAll(".section__title, .contact__title").forEach(function (title) {
+          title.setAttribute("aria-label", title.textContent.replace(/\s+/g, " ").trim());
+          title.querySelectorAll(".line__in").forEach(splitWords);
+        });
+      }
 
       render();
       initAnimations();

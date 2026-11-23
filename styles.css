@@ -22,6 +22,8 @@
   --mono: "Spline Sans Mono", Consolas, "Courier New", monospace;
   --gutter: clamp(1.25rem, 4vw, 3rem);
   --max: 1280px;
+  --scroll-track: var(--paper);
+  --scroll-thumb: var(--ink-faint);
 }
 
 /* ------------------------------- Base -------------------------------- */
@@ -29,6 +31,18 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
+
+* {
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+  scrollbar-width: auto;
+}
+
+*::-webkit-scrollbar-track { background: var(--scroll-track); }
+*::-webkit-scrollbar-thumb { background: var(--scroll-thumb); }
+
+@media (forced-colors: active) {
+  * { scrollbar-color: auto; }
+}
 
 body {
   margin: 0;
@@ -222,6 +236,7 @@ section[id] { scroll-margin-top: 5.5rem; }
   max-width: none;
   margin: 0;
   color: var(--paper);
+  background: var(--blue);
   overflow: hidden;
   isolation: isolate;
 }
@@ -230,7 +245,7 @@ section[id] { scroll-margin-top: 5.5rem; }
   position: absolute;
   inset: 0;
   z-index: -1;
-  will-change: transform, clip-path;
+  will-change: transform;
 }
 
 .intro__media img {
@@ -238,7 +253,6 @@ section[id] { scroll-margin-top: 5.5rem; }
   height: 100%;
   object-fit: cover;
   object-position: 50% 56%;
-  will-change: transform;
 }
 
 .intro__scrim {
@@ -306,11 +320,6 @@ section[id] { scroll-margin-top: 5.5rem; }
 }
 
 .w__in {
-  display: inline-block;
-  will-change: transform;
-}
-
-.c {
   display: inline-block;
   will-change: transform;
 }
@@ -1271,7 +1280,7 @@ body::after {
   object-position: 50% 50%;
 }
 
-/* Cortina cinematográfica — abertura e troca de cena */
+/* Cortina cinematográfica — troca de cena */
 .cinema-veil {
   position: fixed;
   inset: 0;
@@ -1289,44 +1298,6 @@ body::after {
 
 .cinema-veil__bar--top { top: 0; }
 .cinema-veil__bar--bottom { bottom: 0; }
-
-/* Loader — contador de abertura */
-.loader {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.9rem;
-  opacity: 0;
-  pointer-events: none;
-  color: var(--paper);
-}
-
-.loader__counter {
-  margin: 0;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: clamp(3.4rem, 9vw, 7rem);
-  line-height: 1;
-  color: var(--oxide-light);
-  font-variation-settings: "SOFT" 40, "WONK" 1;
-}
-
-.loader__name {
-  margin: 0;
-  font-size: 0.66rem;
-  color: rgba(236, 231, 222, 0.72);
-}
-
-.loader__rule {
-  display: block;
-  width: 64px;
-  height: 1px;
-  background: rgba(236, 231, 222, 0.4);
-}
 
 /* Cursor customizado — ponto + anel.
    Só existe em ponteiro fino: sem isso o anel fica preso em 0,0 no toque. */
@@ -1385,10 +1356,9 @@ body.has-cursor * { cursor: none; }
   overflow-y: hidden;
   scroll-snap-type: x proximity;
   border-block: 1px solid var(--blue-soft);
-  scrollbar-width: none;
+  --scroll-track: var(--blue);
+  --scroll-thumb: var(--paper-2);
 }
-
-.reel::-webkit-scrollbar { display: none; }
 
 .reel__track {
   display: flex;
@@ -1552,7 +1522,10 @@ body.no-motion .cursor-preview { display: none; }
 
   .intro { padding-bottom: 2.4rem; }
   .intro__grid { grid-template-columns: 1fr; }
-  .intro__title { font-size: clamp(2.7rem, 12.5vw, 3.8rem); }
+  .intro__title { font-size: clamp(2.25rem, 12vw, 3.8rem); }
+  .intro__kicker { margin-bottom: 1.1rem; }
+  .intro__lede { margin-top: 1.15rem; }
+  .intro__cta { margin-top: 1.4rem; }
 
   /* No celular o título cai sobre a parte clara da foto. Escurece só essa
      faixa do meio — o topo continua na hora azul do original. */
@@ -1580,7 +1553,7 @@ body.no-motion .cursor-preview { display: none; }
   .card--vertical,
   .card--full,
   .card--full-close {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.4rem;
   }
 
@@ -1619,8 +1592,27 @@ body.no-motion .cursor-preview { display: none; }
   .index__link { grid-template-columns: 2.4rem minmax(0, 1fr) 2rem; }
   .index__sub { display: none; }
 
-  .dialog__content { grid-template-columns: 1fr; }
-  .case__header { position: static; }
+  .dialog__content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.4rem;
+  }
+  .dialog__close {
+    width: 2.75rem;
+    height: 2.75rem;
+    float: none;
+    margin: 0 0 -2.75rem auto;
+  }
+  .case__header,
+  .case__gallery { display: contents; }
+  .case__identity { padding-inline-end: 3rem; }
+  .case__eyebrow { flex-wrap: wrap; gap: 0.3rem 0.75rem; }
+  .case__figure--cover { order: 1; }
+  .case__figure figcaption span:last-child { white-space: nowrap; }
+  .case__details { order: 2; }
+  .case__details .case__desc { margin-top: 0; }
+  .case__gallery .case__figure:not(.case__figure--cover) { order: 3; }
+  .case__next { order: 4; }
+  .case__credits > div { grid-template-columns: minmax(5.5rem, 35%) minmax(0, 1fr); }
   .case__next { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
   .case__next-link { text-align: left; }
   .dialog__panel { max-height: 94vh; }

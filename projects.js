@@ -28,7 +28,7 @@ window.PORTFOLIO = {
       tools: ["SketchUp", "D5 Render"],
       behance: "https://www.behance.net/gallery/243216133/CASA-DE-VIDRO-LINA-BO-BARDI",
       hero: {
-        desktop: { index: 1, ratio: "3 / 4", module: "1403157771", focus: "54% 47%", src: "assets/casa-de-vidro/1403157771.jpg" },
+        desktop: { index: 1, ratio: "3 / 4", module: "1403157771", focus: "54% 47%", intrinsicSize: [1650, 2200], src: "assets/casa-de-vidro/1403157771.jpg" },
         mobile: { index: 1, ratio: "3 / 4", module: "1403157771", note: "corte deslocado para a escada", src: "assets/casa-de-vidro/1403157771.jpg" }
       },
       gallery: [
@@ -54,7 +54,7 @@ window.PORTFOLIO = {
       tools: [],
       behance: "https://www.behance.net/gallery/222960975/APT-008",
       hero: {
-        desktop: { index: 1, ratio: "4 / 5", module: "1273049755", src: "assets/apt-008/1273049755.jpg" },
+        desktop: { index: 1, ratio: "4 / 5", module: "1273049755", intrinsicSize: [1080, 1350], src: "assets/apt-008/1273049755.jpg" },
         mobile: { index: 1, ratio: "4 / 5", module: "1273049755", src: "assets/apt-008/1273049755.jpg" }
       },
       gallery: [
@@ -80,7 +80,7 @@ window.PORTFOLIO = {
       tools: ["Photoshop", "3ds Max", "Corona Renderer"],
       behance: "https://www.behance.net/gallery/206226511/KAISERHARTEN-BLUEHOUR-OF3D",
       hero: {
-        desktop: { index: 1, ratio: "4 / 5", module: "1170877123", focus: "55% 55%", src: "assets/kaiserharten/1170877123.jpeg" },
+        desktop: { index: 1, ratio: "4 / 5", module: "1170877123", focus: "55% 55%", intrinsicSize: [1760, 2200], src: "assets/kaiserharten/1170877123.jpeg" },
         mobile: { index: 1, ratio: "4 / 5", module: "1170877123", src: "assets/kaiserharten/1170877123.jpeg" }
       },
       gallery: [
@@ -106,7 +106,7 @@ window.PORTFOLIO = {
       tools: ["Photoshop", "3ds Max", "D5 Render"],
       behance: "https://www.behance.net/gallery/243215589/CASA-BOROGODO",
       hero: {
-        desktop: { index: 3, ratio: "16 / 9", module: "1403155961", focus: "50% 52%", src: "assets/casa-borogodo/1403155961.jpg" },
+        desktop: { index: 3, ratio: "16 / 9", module: "1403155961", focus: "50% 52%", intrinsicSize: [1651, 2200], src: "assets/casa-borogodo/1403155961.jpg" },
         mobile: { index: 3, ratio: "4 / 5", module: "1403155961", src: "assets/casa-borogodo/1403155961.jpg" }
       },
       gallery: [
@@ -132,7 +132,7 @@ window.PORTFOLIO = {
       tools: ["Photoshop", "3ds Max", "Corona Renderer"],
       behance: "https://www.behance.net/gallery/206226655/HOUSE-OF-SAND-OF3D",
       hero: {
-        desktop: { index: 2, ratio: "16 / 9", module: "1170878081", focus: "50% 68%", src: "assets/house-of-sand/1170878081.jpeg" },
+        desktop: { index: 2, ratio: "16 / 9", module: "1170878081", focus: "50% 68%", intrinsicSize: [1760, 2200], src: "assets/house-of-sand/1170878081.jpeg" },
         mobile: { index: 2, ratio: "4 / 5", module: "1170878081", src: "assets/house-of-sand/1170878081.jpeg" }
       },
       gallery: [
@@ -158,7 +158,7 @@ window.PORTFOLIO = {
       tools: ["Autodesk Revit", "Lumion 12"],
       behance: "https://www.behance.net/gallery/197587835/CASA-PINA",
       hero: {
-        desktop: { index: 6, ratio: "16 / 9", module: "1119257257", focus: "50% 56%", src: "assets/casa-pina/1119257257.jpg" },
+        desktop: { index: 6, ratio: "16 / 9", module: "1119257257", focus: "50% 56%", intrinsicSize: [1920, 1920], src: "assets/casa-pina/1119257257.jpg" },
         mobile: { index: 4, ratio: "4 / 5", module: "1119257253", focus: "50% 52%", src: "assets/casa-pina/1119257253.jpg" }
       },
       gallery: [
@@ -186,7 +186,7 @@ window.PORTFOLIO = {
       tools: [],
       behance: "https://www.behance.net/gallery/222960361/Casa-do-Lago",
       hero: {
-        desktop: { index: 4, ratio: "16 / 9", module: "1273046027", focus: "50% 56%", src: "assets/casa-do-lago/1273046027.jpg" },
+        desktop: { index: 4, ratio: "16 / 9", module: "1273046027", focus: "50% 56%", intrinsicSize: [1467, 2200], src: "assets/casa-do-lago/1273046027.jpg" },
         mobile: { index: 3, ratio: "4 / 5", module: "1273046029", src: "assets/casa-do-lago/1273046029.jpeg" }
       },
       gallery: [
