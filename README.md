@@ -1,46 +1,31 @@
-﻿# Portfólio — Eduarda Amaral
+# Portfólio — Eduarda Amaral
 
 Site estático, sem dependências externas, construído a partir da vistoria visual
 de 14/08/2026 sobre o Behance [eduardaamaral8](https://www.behance.net/eduardaamaral8).
 
-Direção: **“caderno de prova”** — papel, tinta, óxido e hora-azul. Animação com
-GSAP + ScrollTrigger; tipografia Fraunces + Spline Sans + Spline Sans Mono.
+O site usa o template Sillage da 8B, no mesmo build CSS/JavaScript
+da demonstração da 21st.dev. O código do template está sob licença MIT
+em `LICENSE-SILLAGE`. As imagens são do portfólio de Eduarda Amaral,
+com créditos de arquitetura e visualização em cada ficha.
 
 ## Abrir
 
-Abra `index.html` no navegador — nada é baixado, tudo é local (fontes, GSAP, imagens).
-
-```powershell
+```sh
 python -m http.server 8123
 ```
 
-## Estrutura
+## Arquivos ativos
 
-- `index.html` — estrutura e textos (curadoria, serviços, processo, contato reais).
-- `styles.css` — sistema visual: molduras de prova, grades assimétricas, faixas escuras.
-- `projects.js` — curadoria: ordem, textos, notas curatoriais, créditos, slots de imagem.
-- `app.js` — renderização dos cartões e fichas + animações GSAP/ScrollTrigger.
-- `fonts.css` + `fonts/` — fontes self-hosted (woff2, subconjunto latin).
-- `vendor/` — `gsap.min.js` e `ScrollTrigger.min.js` locais.
-- `assets/` — imagens dos módulos Behance, comprimidas (JPEG q84, máx. 2200px).
+- `index.html` contém o HTML, os estilos e as cenas originais do Sillage,
+  adaptados ao conteúdo do portfólio.
+- `projects.js` mantém a curadoria, imagens e créditos das fichas.
+- `fichas.js` e `fichas.css` integram as fichas ao grid e ao destaque da Casa Pina.
+- `srcset.js` registra os arquivos WebP da galeria.
+- Mozilla Headline e Instrument Sans usam o Google Fonts conforme o template original.
 
-## Regras editoriais implementadas
-
-- **Sete projetos na home**, na ordem da vistoria; Tini Pavilion em Studies.
-- **Uma imagem por entrada** — a ficha completa abre em diálogo.
-- **Art direction por dispositivo** — Casa do Lago troca 4→3 no mobile; Casa Pina troca 6→4 (via `picture`).
-- **Créditos separados** — Arquitetura e Visualização são campos distintos.
-- **Datas honestas** — datas do Behance não são exibidas como ano de projeto.
-- **Diagramas técnicos em `contain`** — axonométrica e planta nunca são cortadas.
-- **Sem slop** — sem “excelência”, “sonhos” ou promessas; fatos, ferramentas e números verificáveis.
-- **Legendas para o visitante** — na home, ferramentas e proporção; números de módulo do Behance aparecem só na ficha.
-
-## Animações
-
-A capa e suas ações aparecem desde a abertura. GSAP/ScrollTrigger controlam a
-revelação dos cartões, o parallax sutil
-nas imagens, régua do processo, contadores e barra de progresso.
-`prefers-reduced-motion` desliga tudo.
+As cenas vinculadas à rolagem usam os recursos nativos do navegador.
+Com movimento reduzido ou sem suporte a esses recursos, a composição
+permanece disponível em modo estático.
 
 ## Manutenção de imagens
 

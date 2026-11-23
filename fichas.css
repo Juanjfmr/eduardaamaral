@@ -1,0 +1,86 @@
+/* Conteúdo e fichas do portfólio sobre o sistema visual Sillage. */
+.legacy-anchor {
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  scroll-margin-top: 52px;
+}
+
+#contact, #studio, #method, #expertise, #crew, #works { position: relative; scroll-margin-top: 52px; }
+
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: var(--space-1);
+  z-index: 70;
+  transform: translateY(-140%);
+  padding: 0.6rem 1rem;
+  background: var(--color-2);
+  color: var(--color-1);
+}
+.skip-link:focus { transform: none; }
+
+#hero .m-mark, #footer .m-mark { font-size: calc(100cqi / (var(--len) * .84)); }
+#hero .hero__drift img { object-position: 50% 58%; }
+#hero .hero__go { display: inline-flex; align-items: center; min-height: 44px; }
+#works .works__frame { display: block; width: 100%; }
+#works .works__frame:focus-visible { outline-offset: 4px; }
+#feature .feature__cta { cursor: pointer; }
+#studio .studio__photo img { object-position: 50% 61%; }
+#crew .crew__photo img { object-position: 50% 55%; }
+
+.project-link { text-align: start; cursor: pointer; }
+.project-link:hover { text-decoration: underline; }
+
+.project-dialog {
+  width: min(980px, calc(100vw - 24px));
+  max-width: none;
+  max-height: calc(100dvh - 24px);
+  margin: auto;
+  padding: 0;
+  overscroll-behavior: contain;
+  border: 1px solid var(--color-2);
+  background: var(--color-1);
+  color: var(--color-2);
+}
+
+html:has(.project-dialog[open]) { overflow: hidden; }
+.project-dialog::backdrop { background: #000a; }
+.project-dialog__bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  padding-inline: var(--space-1);
+  border-bottom: 1px solid var(--color-5);
+  background: var(--color-1);
+}
+.project-dialog__bar button { cursor: pointer; }
+.project-dialog__content { padding: var(--space-1); }
+.project-dialog__content h2 { margin-bottom: 0.35em; }
+.project-dialog__content p + p { margin-top: 0.8rem; }
+.project-dialog__gallery { display: grid; gap: 1.5rem; margin-block: 1.75rem; }
+.project-dialog__gallery figure { display: grid; gap: 0.6rem; margin: 0; }
+.project-dialog__gallery img { display: block; width: 100%; height: auto; }
+.project-dialog__gallery .project-dialog__plate { padding: 0.75rem; border: 1px solid var(--color-5); }
+.project-dialog__plate figcaption { order: -1; padding-bottom: 0.45rem; border-bottom: 1px solid var(--color-5); }
+.project-dialog__meta { display: grid; gap: 0.4rem; margin-block: 1rem; }
+.project-dialog__meta strong { font-weight: 600; }
+.project-dialog__foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-5); }
+
+@media (min-width: 700px) {
+  .project-dialog__gallery img { max-height: 78dvh; object-fit: contain; }
+}
+
+@media (max-width: 700px) {
+  #hero .hero__drift img { object-position: 50% 58%; }
+  #feature .feature__title { font-size: clamp(2.85rem, 12.5vw, 4.5rem); }
+  #feature .feature__stage { min-height: 0; }
+}
+
+/* O letreiro passa por cima da imagem durante a transição. */
+#hero .hero__title { pointer-events: none; }
+#hero .hero__go { scroll-margin-top: 60px; }
