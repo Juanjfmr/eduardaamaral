@@ -16,7 +16,7 @@
   />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="fonts.css?v=2" />
-  <link rel="stylesheet" href="styles.css?v=16" />
+  <link rel="stylesheet" href="styles.css?v=17" />
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -45,11 +45,14 @@
 
   <main id="conteudo">
     <section id="topo" class="intro" aria-labelledby="intro-title">
-      <div class="intro__grid">
-        <div class="intro__copy">
-          <p class="intro__kicker mono">Visualização arquitetônica <span>·</span> 2026</p>
-          <h1 id="intro-title" class="intro__title">Fotografar o que ainda <em>não existe.</em></h1>
-        </div>
+      <h1 id="intro-title" class="intro__title" aria-label="Eduarda Amaral">
+        <span class="intro__name" aria-hidden="true"><span class="intro__word"><span>E</span><span>D</span><span>U</span><span>A</span><span>R</span><span>D</span><span>A</span></span><span class="intro__word"><span>A</span><span>M</span><span>A</span><span>R</span><span>A</span><span>L</span></span></span>
+      </h1>
+      <div class="intro__info">
+        <p class="intro__role">Arquitetura · Visualização 3D</p>
+        <p class="intro__tagline">Fotografar o que ainda não existe.</p>
+        <a href="#selecao" class="intro__go">Abrir o álbum <span aria-hidden="true">↓</span></a>
+      </div>
 
         <figure class="intro__media">
           <picture>
@@ -59,7 +62,7 @@
               srcset="assets/casa-do-lago/1273046029-640.webp 640w,
                       assets/casa-do-lago/1273046029-800.webp 800w,
                       assets/casa-do-lago/1273046029-1024.webp 1024w"
-              sizes="calc(100vw - 2.5rem)"
+              sizes="100vw"
             />
             <source
               media="(max-width: 760px)"
@@ -70,7 +73,7 @@
               srcset="assets/casa-do-lago/1273046027-640.webp 640w,
                       assets/casa-do-lago/1273046027-800.webp 800w,
                       assets/casa-do-lago/1273046027-1024.webp 1024w"
-              sizes="(min-width: 1380px) 880px, 64vw"
+              sizes="100vw"
             />
             <img
               src="assets/casa-do-lago/1273046027.jpg"
@@ -79,13 +82,9 @@
               decoding="async"
             />
           </picture>
-          <figcaption class="intro__credit mono"><span>Casa do Lago</span><span>Imagem de capa</span></figcaption>
+          <figcaption class="intro__credit">Casa do Lago · Imagem de capa</figcaption>
         </figure>
 
-        <div class="intro__cta">
-          <a class="btn btn--album" href="#selecao">Abrir o álbum <span aria-hidden="true">↓</span></a>
-        </div>
-      </div>
     </section>
 
     <section id="selecao" class="section section--projects" aria-labelledby="selecao-title">
@@ -94,6 +93,25 @@
         <a class="mono" href="#indice">Ver índice <span aria-hidden="true">↗</span></a>
       </header>
       <div id="projects-grid" class="projects"></div>
+    </section>
+
+    <section class="album-feature" aria-labelledby="pina-feature-title">
+      <div class="album-feature__stage">
+        <div class="album-feature__frame">
+          <picture>
+            <source type="image/webp" srcset="assets/casa-pina/1119257249-640.webp 640w, assets/casa-pina/1119257249-1024.webp 1024w" sizes="100vw" />
+            <img src="assets/casa-pina/1119257249.jpg" alt="Fachada da Casa Pina ao fim da tarde, com concreto, madeira e árvores ao redor." loading="lazy" decoding="async" />
+          </picture>
+        </div>
+        <div class="album-feature__copy">
+          <p class="mono">Projeto em destaque</p>
+          <h2 id="pina-feature-title">Casa Pina</h2>
+          <div class="album-feature__details">
+            <p>Fachada, axonométrica e planta humanizada</p>
+            <button class="card__open" type="button" data-open-case="casa-pina">Ver pranchas <span aria-hidden="true">↗</span></button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ========================== STUDIES 02 ========================== -->
@@ -321,6 +339,6 @@
   <script defer src="vendor/ScrollTrigger.min.js"></script>
   <script defer src="srcset.js?v=1"></script>
   <script defer src="projects.js?v=7"></script>
-  <script defer src="app.js?v=16"></script>
+  <script defer src="app.js?v=17"></script>
 </body>
 </html>

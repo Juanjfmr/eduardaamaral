@@ -152,7 +152,7 @@
     return (
       '<article class="card card--' + esc(p.layout) + '">' +
         '<figure class="card__media">' +
-          '<span class="card__frame frame">' + heroMediaMarkup(p) + "</span>" +
+          '<span class="card__mount"><span class="card__frame frame">' + heroMediaMarkup(p) + "</span></span>" +
           '<figcaption class="card__caption"><span>' + esc(caption) + "</span>" + ratio + "</figcaption>" +
         "</figure>" +
         '<div class="card__meta">' +
@@ -418,6 +418,42 @@
 
   /* ------------------------------ GSAP -------------------------------- */
 
+  function initAlbumMotion(gsap) {
+    gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", function () {
+      const cover = document.querySelector(".intro");
+      const image = cover.querySelector(".intro__media img");
+      const letters = gsap.utils.toArray(".intro__word > span");
+      gsap.from(letters, { yPercent: 22, duration: 0.62, stagger: 0.023, ease: "power3.out", clearProps: "transform" });
+      gsap.timeline({ scrollTrigger: { trigger: cover, start: "top top", end: "bottom 30%", scrub: true, invalidateOnRefresh: true } })
+        .to(cover.querySelectorAll(".intro__word"), {
+          xPercent: function (index) { return index ? 46 : -46; },
+          y: function () { return Math.min(innerHeight * 0.62, cover.offsetHeight * 0.55); },
+          color: "var(--paper)", ease: "power1.in"
+        });
+      gsap.fromTo(image, { scale: 1.045 }, { scale: 1.22, yPercent: 8, ease: "none",
+        scrollTrigger: { trigger: ".intro__media", start: "top top", end: "bottom top", scrub: true }
+      });
+
+      gsap.utils.toArray("#projects-grid .card__mount").forEach(function (mount, index) {
+        const turn = index % 2 ? -1 : 1;
+        gsap.fromTo(mount, { "--sheet-x": 14 * turn + "px", "--sheet-y": "-13px", "--sheet-angle": 3.5 * turn + "deg" }, {
+          "--sheet-x": "0px", "--sheet-y": "0px", "--sheet-angle": "0deg", ease: "power1.inOut",
+          scrollTrigger: { trigger: mount, start: "top bottom", end: "center center", scrub: true }
+        });
+      });
+
+      const feature = document.querySelector(".album-feature");
+      const frame = feature.querySelector(".album-feature__frame");
+      const art = frame.querySelector("img");
+      feature.classList.add("has-stage");
+      gsap.timeline({ scrollTrigger: { trigger: feature, start: "top bottom", end: "top top", scrub: true } })
+        .fromTo(frame, { clipPath: function () { return innerWidth < 761 ? "inset(0 12% 0 12%)" : "inset(0 24% 0 24%)"; } }, { clipPath: "inset(0 0% 0 0%)", ease: "none" }, 0)
+        .fromTo(art, { scale: 1.2 }, { scale: 1.04, ease: "none" }, 0)
+        .fromTo(feature.querySelector("h2"), { xPercent: 13 }, { xPercent: 0, ease: "power1.out" }, 0);
+      return function () { feature.classList.remove("has-stage"); };
+    });
+  }
+
   function initAnimations() {
     if (!hasGsap || reduced) {
       if (reduced) document.body.classList.add("no-motion");
@@ -427,6 +463,7 @@
     const gsap = window.gsap;
     gsap.registerPlugin(window.ScrollTrigger);
     gsap.registerEase("cine", cineEase);
+    initAlbumMotion(gsap);
 
     /* Barra de progresso */
     gsap.to(".progress", {
@@ -479,7 +516,7 @@
     });
 
     /* Cartões */
-    gsap.utils.toArray(".card:not(.card--opener)").forEach(function (card) {
+    gsap.utils.toArray("#studies-grid .card").forEach(function (card) {
       const frame = card.querySelector(".card__frame");
       const caption = card.querySelector(".card__caption");
       const meta = card.querySelectorAll(".card__meta > *");
@@ -707,7 +744,7 @@
       if (!openTrigger.closest("#case-dialog")) {
         lastCaseTrigger = openTrigger;
         const card = openTrigger.closest(".card");
-        lastOriginEl = card ? card.querySelector(".card__frame") : openTrigger.closest(".index__link");
+        lastOriginEl = card ? card.querySelector(".card__frame") : openTrigger.closest(".index__link, .album-feature__stage");
       }
       renderCase(openTrigger.getAttribute("data-open-case"), lastOriginEl ? lastOriginEl.getBoundingClientRect() : null);
       return;
