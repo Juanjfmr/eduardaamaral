@@ -22,30 +22,6 @@
     return String(n).padStart(2, "0");
   }
 
-  function startTimecode() {
-    const tc = document.getElementById("tc");
-    if (!tc || reduced) return;
-    let frames = 0;
-    let acc = 0;
-    let last = performance.now();
-    const pad2 = function (n) { return String(n).padStart(2, "0"); };
-    function tick(now) {
-      acc += now - last;
-      last = now;
-      while (acc >= 1000 / 24) {
-        frames += 1;
-        acc -= 1000 / 24;
-      }
-      const ff = frames % 24;
-      const s = Math.floor(frames / 24) % 60;
-      const m = Math.floor(frames / 1440) % 60;
-      const h = Math.floor(frames / 86400) % 24;
-      tc.textContent = "TC " + pad2(h) + ":" + pad2(m) + ":" + pad2(s) + ":" + pad2(ff);
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }
-
   function cineEase(p) {
     const e = 1 - Math.pow(1 - p, 4);
     return e + (p > 0.55 ? Math.sin(((p - 0.55) / 0.45) * Math.PI) * 0.018 : 0);
@@ -168,19 +144,21 @@
 
   function projectCard(p) {
     const hero = p.hero.desktop;
-    const caption =
-      "Fig. " + pad(p.order) + " — " +
-      (p.tools && p.tools.length ? p.tools.join(" · ") : (p.subtitle || "Seleção 2026"));
+    const caption = p.layout === "opener"
+      ? "Vista exterior"
+      : "Fig. " + pad(p.order) + " — " + (p.tools && p.tools.length ? p.tools.join(" · ") : (p.subtitle || "Seleção 2026"));
+    const ratio = p.layout === "opener" ? "" : "<span>" + esc(hero.ratio || "4 / 5") + "</span>";
+    const subtitle = p.subtitle && p.layout !== "opener" ? '<p class="card__sub">' + esc(p.subtitle) + '</p>' : "";
     return (
       '<article class="card card--' + esc(p.layout) + '">' +
         '<figure class="card__media">' +
           '<span class="card__frame frame">' + heroMediaMarkup(p) + "</span>" +
-          '<figcaption class="card__caption"><span>' + esc(caption) + "</span><span>" + esc(hero.ratio || "4 / 5") + "</span></figcaption>" +
+          '<figcaption class="card__caption"><span>' + esc(caption) + "</span>" + ratio + "</figcaption>" +
         "</figure>" +
         '<div class="card__meta">' +
           '<p class="card__index mono">N.º ' + pad(p.order) + "</p>" +
           '<h3 class="card__title">' + esc(p.title) + "</h3>" +
-          (p.subtitle ? '<p class="card__sub">' + esc(p.subtitle) + "</p>" : "") +
+          subtitle +
           '<p class="card__desc">' + esc(p.description) + "</p>" +
           '<p class="card__credit">' + esc(creditLine(p)) + "</p>" +
           '<button class="card__open" type="button" data-open-case="' + esc(p.id) + '">Ver ficha <span aria-hidden="true">↗</span></button>' +
@@ -241,13 +219,15 @@
   function galleryItemMarkup(g, index) {
     const caption = (g.caption || "Imagem " + g.index) + (g.module ? " · módulo " + g.module : "");
     const isCover = index === 0;
-    const media = mediaMarkup(g, "Imagem do projeto — " + caption, isCover);
-    return (
-      '<figure class="case__figure' + (isCover ? ' case__figure--cover is-in' : '') + (g.contain ? " case__figure--contain" : "") + '">' +
-        '<span class="frame">' + media + "</span>" +
-        "<figcaption><span>" + esc(caption) + "</span><span>" + esc(g.ratio || "") + "</span></figcaption>" +
-      "</figure>"
-    );
+    const media = mediaMarkup(g, g.plate ? g.caption + " da Casa Pina" : "Imagem do projeto — " + caption, isCover);
+    const classes = ["case__figure"];
+    if (isCover) classes.push("case__figure--cover", "is-in");
+    if (g.contain) classes.push("case__figure--contain");
+    if (g.plate) classes.push("case__figure--plate");
+    const captionMarkup = g.plate
+      ? '<figcaption class="case__plate-caption"><span>Prancha ' + pad(index + 1) + '</span><strong>' + esc(g.caption) + '</strong></figcaption>'
+      : "<figcaption><span>" + esc(caption) + "</span><span>" + esc(g.ratio || "") + "</span></figcaption>";
+    return '<figure class="' + classes.join(" ") + '"><span class="frame">' + media + "</span>" + captionMarkup + "</figure>";
   }
 
   function renderCase(id, origin) {
@@ -455,35 +435,6 @@
       scrollTrigger: { start: 0, end: "max", scrub: 0.3 }
     });
 
-    /* Ticker infinito */
-    gsap.to(".ticker__track", {
-      xPercent: -50,
-      duration: 32,
-      ease: "none",
-      repeat: -1
-    });
-
-    /* Hero — parallax de saída + indicador de rolagem */
-    gsap.to(".intro__media", {
-      yPercent: 14,
-      scale: 1.08,
-      ease: "none",
-      scrollTrigger: { trigger: ".intro", start: "top top", end: "bottom top", scrub: 0.6 }
-    });
-    gsap.to(".intro__copy", {
-      yPercent: -16,
-      opacity: 0,
-      ease: "none",
-      scrollTrigger: { trigger: ".intro", start: "top top", end: "bottom top", scrub: 0.6 }
-    });
-    gsap.to(".intro__scroll", {
-      y: 7,
-      duration: 1.2,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    });
-
     /* Títulos de seção — palavras em cascata */
     gsap.utils.toArray(".section__title, .contact__title").forEach(function (title) {
       const words = title.querySelectorAll(".w__in");
@@ -528,7 +479,7 @@
     });
 
     /* Cartões */
-    gsap.utils.toArray(".card").forEach(function (card) {
+    gsap.utils.toArray(".card:not(.card--opener)").forEach(function (card) {
       const frame = card.querySelector(".card__frame");
       const caption = card.querySelector(".card__caption");
       const meta = card.querySelectorAll(".card__meta > *");
@@ -844,7 +795,6 @@
 
       render();
       initAnimations();
-      startTimecode();
     } catch (err) {
       const banner = document.createElement("div");
       banner.setAttribute("role", "alert");

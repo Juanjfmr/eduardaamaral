@@ -162,11 +162,11 @@ window.PORTFOLIO = {
         mobile: { index: 4, ratio: "4 / 5", module: "1119257253", focus: "50% 52%", src: "assets/casa-pina/1119257253.jpg" }
       },
       gallery: [
-        { index: 6, ratio: "16 / 9", module: "1119257257", src: "assets/casa-pina/1119257257.jpg" },
+        { index: 6, ratio: "16 / 9", module: "1119257257", plate: true, caption: "Fachada", src: "assets/casa-pina/1119257257.jpg" },
+        { index: 2, ratio: "4 / 3", module: "1119257247", plate: true, contain: true, caption: "Axonométrica explodida", src: "assets/casa-pina/1119257247.jpg" },
+        { index: 3, ratio: "4 / 3", module: "1119257251", plate: true, contain: true, caption: "Planta humanizada", src: "assets/casa-pina/1119257251.jpg" },
         { index: 4, ratio: "4 / 5", module: "1119257253", src: "assets/casa-pina/1119257253.jpg" },
-        { index: 5, ratio: "16 / 9", module: "1119257249", src: "assets/casa-pina/1119257249.jpg" },
-        { index: 2, ratio: "4 / 3", module: "1119257247", contain: true, caption: "Axonométrica explodida", src: "assets/casa-pina/1119257247.jpg" },
-        { index: 3, ratio: "4 / 3", module: "1119257251", contain: true, caption: "Planta humanizada", src: "assets/casa-pina/1119257251.jpg" }
+        { index: 5, ratio: "16 / 9", module: "1119257249", src: "assets/casa-pina/1119257249.jpg" }
       ]
     },
 

@@ -39,7 +39,7 @@ python -m http.server 8123
 
 A capa e suas ações aparecem desde a abertura. GSAP/ScrollTrigger controlam a
 revelação dos cartões, o parallax sutil
-nas imagens, régua do processo, contadores, ticker de ferramentas e barra de progresso.
+nas imagens, régua do processo, contadores e barra de progresso.
 `prefers-reduced-motion` desliga tudo.
 
 ## Manutenção de imagens
